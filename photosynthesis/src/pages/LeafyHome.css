@@ -58,14 +58,6 @@
   background-repeat: no-repeat;
 }
 
-.leafy-v2__wash {
-  position: absolute;
-  inset: 0;
-  min-height: 100%;
-  backdrop-filter: blur(3px);
-  background: rgba(247, 255, 228, 0.1);
-  pointer-events: none;
-}
 
 .leafy-v2__content {
   position: relative;
@@ -160,6 +152,7 @@
   width: 100%;
   max-width: 200px;
   height: auto;
+  margin-bottom: 1rem;
 }
 
 .leafy-v2__bubble-text {

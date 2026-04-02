@@ -39,15 +39,6 @@
   object-fit: contain;
 }
 
-.leafy-chatv2__wash {
-  position: absolute;
-  inset: 0;
-  background: rgba(247, 255, 228, 0.1);
-  backdrop-filter: blur(6.15px);
-  -webkit-backdrop-filter: blur(6.15px);
-  pointer-events: none;
-}
-
 .leafy-chatv2__back {
   position: absolute;
   left: 25px;
