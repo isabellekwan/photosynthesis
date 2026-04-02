@@ -1,73 +1,245 @@
 import "./LeafyHome.css";
-import bg from "../assets/aihomebg.png";
-import mascot from "../assets/leafywave.png";
+import background from "../assets/aihomebg.png";
+import leafyWave from "../assets/leafywave.png";
+import speechBubble from "../assets/leafy-v2/speech-bubble.png";
+import iconCircle from "../assets/leafy-v2/icon-circle-a.png";
+import iconCamera from "../assets/leafy-v2/icon-camera.png";
+import iconMic from "../assets/leafy-v2/icon-microphone.png";
+import iconChatHistory from "../assets/leafy-v2/icon-chat-history.png";
+
+const PAST_CHATS = [
+  {
+    title: "Why are my kale leaves...?",
+    snippet: "Over watering is a usual cause...",
+    time: "2h ago",
+  },
+  {
+    title: "How often should I water...?",
+    snippet: "Basil should be watered when...",
+    time: "16h ago",
+  },
+  {
+    title: "What are these bugs on my....?",
+    snippet: "These look like aphids, which...",
+    time: "21h ago",
+  },
+];
+
+const TOPIC_CHIPS = [
+  "Get Started",
+  "Plant Care",
+  "My Plants",
+  "Problems",
+  "Weather",
+  "Harvest",
+  "Tips",
+];
+
+const SUGGESTED_CARDS = [
+  {
+    title: "How do I get started with gardening?",
+    body:
+      "Learn the basics, choose your first plants, and get simple guidance to begin.",
+  },
+  {
+    title: "What do I need to start gardening?",
+    body:
+      "Discover tools, plant ideas, and step-by-step guidance for beginners.",
+  },
+  {
+    title: "Start your garden your way",
+    body:
+      "Get tips and plant ideas tailored to your space and goals.",
+  },
+  {
+    title: "Not sure where to begin?",
+    body:
+      "Explore easy plants, beginner tips, and answers to get you growing.",
+  },
+];
 
 const LeafyHome = () => {
   return (
     <div className="leafy-shell">
-      <div className="phone" aria-label="Photosynthesis home">
+      <div className="phone leafy-v2-phone" aria-label="Photosynthesis home">
         <div
-          className="leafy-bg"
-          style={{ backgroundImage: `url(${bg})` }}
-          role="presentation"
-        />
-        <div className="leafy-scrim" aria-hidden />
+          className="leafy-v2"
+          style={{ "--leafy-bg": `url(${background})` }}
+        >
+          <div className="leafy-v2__wash" aria-hidden />
 
-        <div className="leafy-stack">
-          <header className="leafy-header">
-            <div className="leafy-brand" aria-hidden>
-              <svg
-                className="leafy-brand__mark"
-                viewBox="0 0 32 32"
-                width="28"
-                height="28"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+          <div className="leafy-v2__content">
+            <button type="button" className="leafy-v2__back" aria-label="Back">
+              ‹
+            </button>
+
+            <div className="leafy-v2__scroll">
+              <section className="leafy-v2__hero-card" aria-labelledby="ask-leafy-heading">
+                <div className="leafy-v2__hero-inner">
+                  <div className="leafy-v2__mascot" aria-hidden>
+                    <img
+                      src={leafyWave}
+                      alt=""
+                      className="leafy-v2__mascot-img"
+                    />
+                  </div>
+
+                  <div className="leafy-v2__hero-text">
+                    <h1 id="ask-leafy-heading" className="leafy-v2__title">
+                      Ask Leafy
+                    </h1>
+                    <p className="leafy-v2__subtitle">
+                      Your personal plant assistant
+                    </p>
+
+                    <div className="leafy-v2__bubble-wrap">
+                      <img
+                        src={speechBubble}
+                        alt=""
+                        className="leafy-v2__bubble-shape"
+                      />
+                      <p className="leafy-v2__bubble-text">
+                        Carrots can taste sweeter after a light frost!
+                      </p>
+                    </div>
+
+                    <button type="button" className="leafy-v2__cta-talk">
+                      Let&apos;s start talking!
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section
+                className="leafy-v2__mid"
+                aria-label="Quick actions and past chats"
               >
-                <path
-                  d="M16 4c-4.5 4.8-7 10.2-7 15.5 0 3.8 2.2 6.8 5 8.5h4c2.8-1.7 5-4.7 5-8.5C23 14.2 20.5 8.8 16 4Z"
-                  fill="rgba(255,255,255,0.92)"
-                />
-                <path
-                  d="M16 8c-2.8 3.2-4.5 7-4.5 11.2 0 2.5 1.2 4.5 2.8 5.8h3.4c1.6-1.3 2.8-3.3 2.8-5.8C20.5 15 18.8 11.2 16 8Z"
-                  fill="rgba(92,125,92,0.35)"
-                />
-              </svg>
+                <div className="leafy-v2__mid-left">
+                  <article className="leafy-v2__tile">
+                    <div className="leafy-v2__tile-head">
+                      <span className="leafy-v2__icon-ring">
+                        <img src={iconCircle} alt="" />
+                        <img
+                          src={iconCamera}
+                          alt=""
+                          className="leafy-v2__iconglyph"
+                          width={30}
+                          height={30}
+                        />
+                      </span>
+                      <h2 className="leafy-v2__tile-title">Plant Capture</h2>
+                    </div>
+                    <p className="leafy-v2__tile-desc">
+                      Scan your plant to identify problems and get care advice
+                    </p>
+                    <span className="leafy-v2__chevron" aria-hidden>
+                      ›
+                    </span>
+                  </article>
+
+                  <article className="leafy-v2__tile">
+                    <div className="leafy-v2__tile-head">
+                      <span className="leafy-v2__icon-ring">
+                        <img src={iconCircle} alt="" />
+                        <img
+                          src={iconMic}
+                          alt=""
+                          className="leafy-v2__iconglyph"
+                          width={30}
+                          height={30}
+                        />
+                      </span>
+                      <h2 className="leafy-v2__tile-title">Voice</h2>
+                    </div>
+                    <p className="leafy-v2__tile-desc">
+                      Talk to get instant gardening help, hands-free
+                    </p>
+                    <span className="leafy-v2__chevron" aria-hidden>
+                      ›
+                    </span>
+                  </article>
+                </div>
+
+                <article className="leafy-v2__past">
+                  <div className="leafy-v2__past-head">
+                    <span className="leafy-v2__icon-ring">
+                      <img src={iconCircle} alt="" />
+                      <img
+                        src={iconChatHistory}
+                        alt=""
+                        className="leafy-v2__iconglyph leafy-v2__iconglyph--sm"
+                        width={26}
+                        height={26}
+                      />
+                    </span>
+                    <h2 className="leafy-v2__tile-title">Past Chats</h2>
+                  </div>
+                  <ul className="leafy-v2__past-list">
+                    {PAST_CHATS.map((c) => (
+                      <li key={c.title} className="leafy-v2__past-item">
+                        <button type="button" className="leafy-v2__past-row">
+                          <span className="leafy-v2__past-copy">
+                            <span className="leafy-v2__past-title">
+                              {c.title}
+                            </span>
+                            <span className="leafy-v2__past-snippet">
+                              {c.snippet}
+                            </span>
+                            <span className="leafy-v2__past-time">{c.time}</span>
+                          </span>
+                          <span className="leafy-v2__chevron leafy-v2__chevron--sm" aria-hidden>
+                            ›
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              </section>
+
+              <section
+                className="leafy-v2__suggested-head"
+                aria-labelledby="suggested-topics-heading"
+              >
+                <h2 id="suggested-topics-heading" className="leafy-v2__section-title">
+                  Suggested Topics
+                </h2>
+                <div className="leafy-v2__chips" aria-label="Topic categories">
+                  {TOPIC_CHIPS.map((label, i) => (
+                    <button
+                      key={label}
+                      type="button"
+                      aria-pressed={i === 0}
+                      className={
+                        i === 0
+                          ? "leafy-v2__chip leafy-v2__chip--on"
+                          : "leafy-v2__chip"
+                      }
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <section
+                className="leafy-v2__grid"
+                aria-label="Suggested topic cards"
+              >
+                {SUGGESTED_CARDS.map((card) => (
+                  <article key={card.title} className="leafy-v2__topic-card">
+                    <h3 className="leafy-v2__topic-title">{card.title}</h3>
+                    <p className="leafy-v2__topic-body">{card.body}</p>
+                    <button type="button" className="leafy-v2__go">
+                      Let&apos;s go!
+                    </button>
+                  </article>
+                ))}
+              </section>
             </div>
-            <h1 className="leafy-title">Photosynthesis</h1>
-            <p className="leafy-tagline">
-              Your space, your plants — guided step by step.
-            </p>
-          </header>
-
-          <div className="leafy-mid" aria-hidden>
-            <img
-              src={mascot}
-              alt=""
-              className="leafy-mascot"
-              width={220}
-              height={280}
-            />
           </div>
 
-          <div className="leafy-bottom">
-            <article className="leafy-card">
-              <h2>Start your garden your way</h2>
-              <p>
-                Get tips and plant ideas tailored to your space and goals.
-              </p>
-              <button type="button">Let&apos;s go!</button>
-            </article>
-
-            <article className="leafy-card">
-              <h2>Not sure where to begin?</h2>
-              <p>
-                Explore easy plants, beginner tips, and answers to get you
-                growing.
-              </p>
-              <button type="button">Let&apos;s go!</button>
-            </article>
-          </div>
+          <div className="leafy-v2__home-indicator" aria-hidden />
         </div>
       </div>
     </div>
