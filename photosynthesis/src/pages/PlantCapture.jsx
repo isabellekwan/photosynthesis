@@ -451,9 +451,17 @@ Rules:
           ) : null}
 
           {popup ? (
-            <div className="plant-capture__popup-overlay" role="dialog" aria-modal="true">
+            <div
+              className="plant-capture__popup-overlay"
+              role="dialog"
+              aria-modal="true"
+              onClick={() => setPopup(null)}  // 👈 close on outside click
+            >
               {popup.type === "plant" ? (
-                <div className="plant-capture__popup-sheet">
+                <div
+                  className="plant-capture__popup-sheet"
+                  onClick={(e) => e.stopPropagation()}  // 👈 prevents closing
+                >
                   <div className="plant-capture__popup-title">
                     <span className="plant-capture__popup-title--bold">
                       {popup.suggestionTitle}
