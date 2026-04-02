@@ -12,7 +12,7 @@ import plus from "../assets/chat/plus.svg";
  * Access via: import.meta.env.VITE_GEMINI_KEY
  */
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_KEY || "YOUR_API_KEY_HERE";
-const GEMINI_MODEL = "gemini-3-flash-preview"; 
+const GEMINI_MODEL = "gemini-3.1-flash-lite-preview"; 
 
 const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 

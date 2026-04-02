@@ -9,7 +9,7 @@ import check from "../assets/camera/check.svg";
 // Placeholder: use your key via .env (recommended: `VITE_GEMINI_KEY`)
 const GEMINI_API_KEY =
   import.meta.env.VITE_GEMINI_KEY || "YOUR_GEMINI_API_KEY_HERE";
-const GEMINI_MODEL = "gemini-2.5-flash-lite";
+const GEMINI_MODEL = "gemini-3.1-flash-lite-preview";
 
 const VISION_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
