@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./LeafyHome.css";
 import "./PlantCapture.css";
+import leaf from "../assets/camera/leaf.svg";
+import minus from "../assets/camera/minus.svg";
+import check from "../assets/camera/check.svg";
 
 // Placeholder: use your key via .env (recommended: `VITE_GEMINI_KEY`)
 const GEMINI_API_KEY =
@@ -27,10 +30,6 @@ const THUMB_SVG = (
     />
   </svg>
 );
-
-const imgVector = "https://www.figma.com/api/mcp/asset/69b5bb4c-8d45-4774-a273-ce6140a5d459";
-const imgIcon = "https://www.figma.com/api/mcp/asset/6a4f4d43-6399-4214-80db-52df7d2944c6";
-const imgCheck = "https://www.figma.com/api/mcp/asset/66af8bfd-cf1a-4fab-bfbc-65375ae1e954";
 
 function extractJson(text) {
   if (!text) return null;
@@ -470,7 +469,7 @@ Rules:
                       className="plant-capture__popup-tryagain"
                       onClick={() => setPopup(null)}
                     >
-                      <img className="plant-capture__popup-tryagain-icon" src={imgIcon} alt="" />
+                      <img className="plant-capture__popup-tryagain-icon" src={minus} alt="" />
                       <span className="plant-capture__popup-tryagain-text">Try again</span>
                     </button>
                   </div>
@@ -487,7 +486,7 @@ Rules:
                     }}
                   >
                     <span className="plant-capture__popup-continue-text">Yes, continue</span>
-                    <img className="plant-capture__popup-continue-icon" src={imgCheck} alt="" />
+                    <img className="plant-capture__popup-continue-icon" src={check} alt="" />
                   </button>
 
                   <button
@@ -500,7 +499,7 @@ Rules:
                       });
                     }}
                   >
-                    <img className="plant-capture__popup-ask-icon" src={imgVector} alt="" />
+                    <img className="plant-capture__popup-ask-icon" src={leaf} alt="" />
                     <span className="plant-capture__popup-ask-text">Ask Leafy</span>
                   </button>
                 </div>
@@ -514,7 +513,7 @@ Rules:
                     className="plant-capture__popup-tryagain plant-capture__popup-tryagain--not-plant"
                     onClick={() => setPopup(null)}
                   >
-                    <img className="plant-capture__popup-tryagain-icon" src={imgIcon} alt="" />
+                    <img className="plant-capture__popup-tryagain-icon" src={minus} alt="" />
                     <span className="plant-capture__popup-tryagain-text">Try again</span>
                   </button>
                 </div>
