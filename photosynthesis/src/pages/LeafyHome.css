@@ -177,7 +177,7 @@
 }
 
 .leafy-v2__cta-talk {
-  margin-top: 12px;
+  margin-top: 4rem;
   width: 100%;
   max-width: 220px;
   border: none;
@@ -190,6 +190,7 @@
   cursor: pointer;
   background: linear-gradient(90deg, #c1d663 0%, #60a911 100%);
   box-shadow: 0 2px 8px rgba(76, 120, 20, 0.25);
+  margin-left: 2rem;
 }
 
 .leafy-v2__cta-talk:hover {
