@@ -454,7 +454,6 @@
 /* === BUTTON BASE === */
 .plant-capture__popup-tryagain,
 .plant-capture__popup-continue {
-  flex: 1;
   height: 64px;
   border-radius: 999px;
   border: none;
@@ -483,15 +482,19 @@
   font-size: 17px;
   color: #fff;
   white-space: nowrap; /* 👈 prevents breaking */
+  text-align: left;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 /* ICONS */
 .plant-capture__popup-tryagain-icon,
 .plant-capture__popup-continue-icon {
-  width: 22px;
-  height: 22px;
+  width: 2.5rem;
+  height: 2.5rem;
   object-fit: contain;
   flex-shrink: 0;
+  margin-top: 3rem;
 }
 
 /* === BOTTOM ROW === */
@@ -500,16 +503,18 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+  margin-top: 1rem;
 }
 
 .plant-capture__popup-unsure {
   font-size: 20px;
   color: #000;
+  padding-left: 4rem;
 }
 
 /* === ASK LEAFY BUTTON === */
 .plant-capture__popup-ask {
-  flex: 1;
+  /* flex: 1; */
   height: 70px;
   border-radius: 999px;
   border: none;
@@ -519,7 +524,7 @@
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 22px;
+  padding-left: 1rem;
   cursor: pointer;
 
   position: relative;         /* 👈 safety */
@@ -537,10 +542,11 @@
 
 .plant-capture__popup-ask-icon {
   position: static !important;  /* 👈 important */
-  width: 36px;
-  height: 36px;
+  width: 4rem;
+  height: 4rem;
   object-fit: contain;
   transform: none;
+  padding-bottom: 2rem;
 }
 
 .plant-capture__popup-ask-text {

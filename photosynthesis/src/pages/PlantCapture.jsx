@@ -438,7 +438,7 @@ Rules:
               <div className="plant-capture__error-inner">
                 <p>{cameraError}</p>
                 <button type="button" onClick={() => void connectCamera()}>
-                  Try again
+                  Try <br />again
                 </button>
               </div>
             </div>
@@ -472,7 +472,7 @@ Rules:
                       onClick={() => setPopup(null)}
                     >
                       <span className="plant-capture__popup-tryagain-text">
-                        Try again
+                        Try<br />again
                       </span>
                       <img
                         className="plant-capture__popup-tryagain-icon"
@@ -492,7 +492,7 @@ Rules:
                       }}
                     >
                       <span className="plant-capture__popup-continue-text">
-                        Yes, continue
+                        Yes,<br />continue
                       </span>
                       <img
                         className="plant-capture__popup-continue-icon"
@@ -527,7 +527,7 @@ Rules:
               ) : (
                 <div className="plant-capture__popup-sheet">
                   <div className="plant-capture__popup-title plant-capture__popup-title--not-plant">
-                    this is not a plant, try again
+                    This is not a plant, try again
                   </div>
 
                   <button
@@ -536,7 +536,7 @@ Rules:
                     onClick={() => setPopup(null)}
                   >
                     <span className="plant-capture__popup-tryagain-text">
-                      Try again
+                      Try<br />again
                     </span>
                     <img
                       className="plant-capture__popup-tryagain-icon"
