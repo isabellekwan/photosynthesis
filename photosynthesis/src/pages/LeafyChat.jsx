@@ -194,7 +194,7 @@ function LeafyChat() {
                       : "leafy-chatv2__bubble--model"
                   }`}
                 >
-                  {m.pending ? "Leafy is typing..." : m.text}
+                  {m.pending ? "Leafy is thinking..." : m.text}
                 </div>
               </div>
             ))}
