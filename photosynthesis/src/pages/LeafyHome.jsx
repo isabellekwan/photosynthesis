@@ -1,11 +1,10 @@
 import "./LeafyHome.css";
-import background from "../assets/aihomebg.png";
-import leafyWave from "../assets/leafywave.png";
-import speechBubble from "../assets/leafy-v2/speech-bubble.png";
-import iconCircle from "../assets/leafy-v2/icon-circle-a.png";
-import iconCamera from "../assets/leafy-v2/icon-camera.png";
-import iconMic from "../assets/leafy-v2/icon-microphone.png";
-import iconChatHistory from "../assets/leafy-v2/icon-chat-history.png";
+import background from "../assets/leafyhome/aihomebg.png";
+import leafyWave from "../assets/leafyhome/leafywave.svg";
+import speechBubble from "../assets/leafyhome/speechbubble.svg";
+import iconCamera from "../assets/leafyhome/camera.svg";
+import iconMic from "../assets/leafyhome/microphone.svg";
+import iconChatHistory from "../assets/leafyhome/history.svg";
 
 const PAST_CHATS = [
   {
@@ -118,7 +117,6 @@ const LeafyHome = () => {
                   <article className="leafy-v2__tile">
                     <div className="leafy-v2__tile-head">
                       <span className="leafy-v2__icon-ring">
-                        <img src={iconCircle} alt="" />
                         <img
                           src={iconCamera}
                           alt=""
@@ -140,7 +138,6 @@ const LeafyHome = () => {
                   <article className="leafy-v2__tile">
                     <div className="leafy-v2__tile-head">
                       <span className="leafy-v2__icon-ring">
-                        <img src={iconCircle} alt="" />
                         <img
                           src={iconMic}
                           alt=""
@@ -163,7 +160,6 @@ const LeafyHome = () => {
                 <article className="leafy-v2__past">
                   <div className="leafy-v2__past-head">
                     <span className="leafy-v2__icon-ring">
-                      <img src={iconCircle} alt="" />
                       <img
                         src={iconChatHistory}
                         alt=""
