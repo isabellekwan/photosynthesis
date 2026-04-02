@@ -103,9 +103,13 @@ const LeafyHome = () => {
                       </p>
                     </div>
 
-                    <button type="button" className="leafy-v2__cta-talk">
+                    <Link
+                      to="/chat"
+                      className="leafy-v2__cta-talk"
+                      aria-label="Start chatting with Leafy"
+                    >
                       Let&apos;s start talking!
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </section>
