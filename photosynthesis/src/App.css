@@ -1,3 +1,10 @@
+/* Full-bleed shell for the mobile home screen (overrides Vite template #root) */
+#root {
+  max-width: none;
+  border-inline: none;
+  margin: 0;
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
