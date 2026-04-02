@@ -1,4 +1,6 @@
 ﻿# photosynthesis
+
+`cd photosynthesis`
  
 when first cloning:
 
