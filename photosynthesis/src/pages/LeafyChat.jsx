@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./LeafyHome.css";
 import "./LeafyChat.css";
 import background from "../assets/chat/bg.png";
@@ -93,22 +93,35 @@ async function generateGeminiReply(chatMessages, signal) {
   return reply;
 }
 
-const initialMessages = [
-  {
-    id: "m1",
-    role: "model",
-    text: "Hi there, I'm Leafy! How can I help your garden grow today? :)",
-  },
-];
-
 function LeafyChat() {
-  const [messages, setMessages] = useState(initialMessages);
+  const location = useLocation();
+  const detectedPlantTitle =
+    location.state?.detectedPlantTitle || location.state?.suggestionTitle || "";
+
+  const seededUserText = detectedPlantTitle
+    ? `I detected ${detectedPlantTitle} in the photo. Is that correct, and what should I do next?`
+    : "";
+
+  const [messages, setMessages] = useState(() => {
+    const base = [
+      {
+        id: "m1",
+        role: "model",
+        text: "Hi there, I'm Leafy! How can I help your garden grow today? :)",
+      },
+    ];
+
+    if (!seededUserText) return base;
+    const userId = crypto.randomUUID();
+    return [...base, { id: userId, role: "user", text: seededUserText }];
+  });
   const [composerText, setComposerText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState(null);
 
   const chatScrollRef = useRef(null);
   const abortRef = useRef(null);
+  const autoSeededRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     const el = chatScrollRef.current;
@@ -118,6 +131,56 @@ function LeafyChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isSending, scrollToBottom]);
+
+  useEffect(() => {
+    if (!seededUserText) return;
+    if (autoSeededRef.current) return;
+    autoSeededRef.current = true;
+
+    const contextForApi = messages;
+    const modelId = crypto.randomUUID();
+    const modelMsg = {
+      id: modelId,
+      role: "model",
+      text: "",
+      pending: true,
+    };
+
+    setMessages((prev) => [...prev, modelMsg]);
+    setIsSending(true);
+
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+
+    void (async () => {
+      try {
+        const reply = await generateGeminiReply(contextForApi, ac.signal);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === modelId ? { ...m, text: reply, pending: false } : m,
+          ),
+        );
+      } catch (err) {
+        if (err?.name !== "AbortError") {
+          setError(err?.message || "Something went wrong talking to Gemini.");
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === modelId
+                ? {
+                    ...m,
+                    text: "Leafy couldn't analyze that right now. Please try again.",
+                    pending: false,
+                  }
+                : m,
+            ),
+          );
+        }
+      } finally {
+        setIsSending(false);
+      }
+    })();
+  }, [seededUserText, messages]);
 
   const onSubmit = useCallback(
     async (e) => {
@@ -199,7 +262,7 @@ function LeafyChat() {
           </Link>
 
           <h2 className="leafy-chatv2__title">
-            Plant Care Expert
+            {detectedPlantTitle ? `${detectedPlantTitle} Care` : "Plant Care Expert"}
           </h2>
 
           <div className="leafy-chatv2__chat" ref={chatScrollRef}>

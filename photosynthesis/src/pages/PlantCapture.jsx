@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./LeafyHome.css";
 import "./PlantCapture.css";
+
+// Placeholder: use your key via .env (recommended: `VITE_GEMINI_KEY`)
+const GEMINI_API_KEY =
+  import.meta.env.VITE_GEMINI_KEY || "YOUR_GEMINI_API_KEY_HERE";
+const GEMINI_MODEL = "gemini-2.5-flash-lite";
+
+const VISION_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const THUMB_SVG = (
   <svg
@@ -21,12 +28,33 @@ const THUMB_SVG = (
   </svg>
 );
 
+const imgVector = "https://www.figma.com/api/mcp/asset/69b5bb4c-8d45-4774-a273-ce6140a5d459";
+const imgIcon = "https://www.figma.com/api/mcp/asset/6a4f4d43-6399-4214-80db-52df7d2944c6";
+const imgCheck = "https://www.figma.com/api/mcp/asset/66af8bfd-cf1a-4fab-bfbc-65375ae1e954";
+
+function extractJson(text) {
+  if (!text) return null;
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start === -1 || end === -1 || end <= start) return null;
+  const slice = text.slice(start, end + 1);
+  try {
+    return JSON.parse(slice);
+  } catch {
+    return null;
+  }
+}
+
 function PlantCapture() {
+  const navigate = useNavigate();
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
   const streamRef = useRef(null);
+  const analysisAbortRef = useRef(null);
   const [thumbUrl, setThumbUrl] = useState("");
   const [cameraError, setCameraError] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [popup, setPopup] = useState(null);
 
   const stopStream = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -80,15 +108,49 @@ function PlantCapture() {
 
   useEffect(() => {
     const ac = new AbortController();
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- MediaDevices: setState runs after await inside connectCamera
     void connectCamera(ac.signal);
     return () => {
       ac.abort();
       stopStream();
+      analysisAbortRef.current?.abort();
     };
   }, [connectCamera, stopStream]);
 
-  const capturePhoto = useCallback(() => {
+  const readFileAsDataUrl = useCallback((file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Failed to read file."));
+      reader.readAsDataURL(file);
+    });
+  }, []);
+
+  const downscaleJpegDataUrl = useCallback(async (dataUrl, maxDim = 1024) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = dataUrl;
+
+    await new Promise((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error("Failed to load image."));
+    });
+
+    const w = img.naturalWidth || 1;
+    const h = img.naturalHeight || 1;
+    const scale = Math.min(1, maxDim / Math.max(w, h));
+    const targetW = Math.max(1, Math.round(w * scale));
+    const targetH = Math.max(1, Math.round(h * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("No canvas context.");
+    ctx.drawImage(img, 0, 0, targetW, targetH);
+    return canvas.toDataURL("image/jpeg", 0.88);
+  }, []);
+
+  const getFrameDataUrl = useCallback(() => {
     const video = videoRef.current;
     if (!video || video.readyState < 2) return;
 
@@ -96,34 +158,185 @@ function PlantCapture() {
     const h = video.videoHeight;
     if (!w || !h) return;
 
+    // Downscale to keep Gemini requests responsive.
+    const maxDim = 1024;
+    const scale = Math.min(1, maxDim / Math.max(w, h));
+    const targetW = Math.max(1, Math.round(w * scale));
+    const targetH = Math.max(1, Math.round(h * scale));
+
     const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
+    canvas.width = targetW;
+    canvas.height = targetH;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.drawImage(video, 0, 0, w, h);
-    setThumbUrl((prev) => {
-      if (prev.startsWith("blob:")) URL.revokeObjectURL(prev);
-      return canvas.toDataURL("image/jpeg", 0.88);
-    });
+    ctx.drawImage(video, 0, 0, targetW, targetH);
+    return canvas.toDataURL("image/jpeg", 0.88);
   }, []);
+
+  const analyzePlantFromImage = useCallback(
+    async (dataUrl, signal) => {
+      if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("YOUR_")) {
+        throw new Error(
+          "Gemini API key is not set. Put it into `VITE_GEMINI_KEY` in .env.",
+        );
+      }
+      if (!dataUrl) throw new Error("No image captured.");
+
+      const base64 = dataUrl.split(",")[1] || "";
+
+      const prompt = `You are Leafy, a helpful plant assistant.
+Analyze the provided image.
+Return ONLY valid JSON in this exact format:
+{
+  "isPlant": boolean,
+  "suggestionTitle": string
+}
+Rules:
+- isPlant must be true only if the image shows a living plant/leaf.
+- suggestionTitle must be the most likely common name of the plant (e.g., "Sweet Basil", "Tomato") when isPlant is true.
+- If isPlant is false, suggestionTitle must be an empty string.
+- Do not include any extra text outside the JSON.`;
+
+      const res = await fetch(
+        `${VISION_ENDPOINT}?key=${encodeURIComponent(GEMINI_API_KEY)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  { text: prompt },
+                  {
+                    inlineData: {
+                      mimeType: "image/jpeg",
+                      data: base64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 256,
+            },
+          }),
+          signal,
+        },
+      );
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Gemini request failed (${res.status}). ${text}`);
+      }
+
+      const data = await res.json();
+      const geminiText =
+        data?.candidates?.[0]?.content?.parts
+          ?.map((p) => p?.text || "")
+          .join("") || "";
+
+      const parsed = extractJson(geminiText);
+      if (!parsed || typeof parsed.isPlant !== "boolean") {
+        throw new Error("Gemini returned an unexpected response.");
+      }
+
+      return {
+        isPlant: parsed.isPlant,
+        suggestionTitle: parsed.suggestionTitle || "",
+      };
+    },
+    [],
+  );
 
   const onPickFile = useCallback((e) => {
     const file = e.target.files?.[0];
     if (!file?.type?.startsWith("image/")) return;
-    const url = URL.createObjectURL(file);
-    setThumbUrl((prev) => {
-      if (prev.startsWith("blob:")) URL.revokeObjectURL(prev);
-      return url;
-    });
+    // Kick off async analysis; keep UI responsive.
+    void (async () => {
+      if (isAnalyzing) return;
+
+      analysisAbortRef.current?.abort();
+      const ac = new AbortController();
+      analysisAbortRef.current = ac;
+
+      setCameraError(null);
+      setPopup(null);
+      setIsAnalyzing(true);
+
+      try {
+        const rawDataUrl = await readFileAsDataUrl(file);
+        if (ac.signal.aborted) return;
+
+        const jpegDataUrl = await downscaleJpegDataUrl(String(rawDataUrl));
+        if (ac.signal.aborted) return;
+
+        setThumbUrl(jpegDataUrl);
+
+        const result = await analyzePlantFromImage(jpegDataUrl, ac.signal);
+        if (result.isPlant) {
+          setPopup({
+            type: "plant",
+            suggestionTitle: result.suggestionTitle || "Plant",
+          });
+        } else {
+          setPopup({ type: "notPlant" });
+        }
+      } catch (err) {
+        if (err?.name !== "AbortError") {
+          setPopup({ type: "notPlant" });
+        }
+      } finally {
+        if (analysisAbortRef.current === ac) analysisAbortRef.current = null;
+        setIsAnalyzing(false);
+      }
+    })();
+
     e.target.value = "";
-  }, []);
+  }, [analyzePlantFromImage, downscaleJpegDataUrl, isAnalyzing, readFileAsDataUrl]);
 
   useEffect(() => {
     return () => {
       if (thumbUrl.startsWith("blob:")) URL.revokeObjectURL(thumbUrl);
     };
   }, [thumbUrl]);
+
+  const onShutter = useCallback(async () => {
+    if (isAnalyzing) return;
+    const dataUrl = getFrameDataUrl();
+    if (!dataUrl) return;
+
+    setThumbUrl((prev) => {
+      if (prev.startsWith("blob:")) URL.revokeObjectURL(prev);
+      return dataUrl;
+    });
+    setCameraError(null);
+    setPopup(null);
+    setIsAnalyzing(true);
+
+    analysisAbortRef.current?.abort();
+    const ac = new AbortController();
+    analysisAbortRef.current = ac;
+    try {
+      const result = await analyzePlantFromImage(dataUrl, ac.signal);
+      if (result.isPlant) {
+        setPopup({
+          type: "plant",
+          suggestionTitle: result.suggestionTitle || "Plant",
+        });
+      } else {
+        setPopup({ type: "notPlant" });
+      }
+    } catch (e) {
+      if (e?.name !== "AbortError") {
+        setPopup({ type: "notPlant" });
+      }
+    } finally {
+      if (analysisAbortRef.current === ac) analysisAbortRef.current = null;
+      setIsAnalyzing(false);
+    }
+  }, [analyzePlantFromImage, getFrameDataUrl, isAnalyzing]);
 
   return (
     <div className="leafy-shell">
@@ -195,7 +408,8 @@ function PlantCapture() {
                 type="button"
                 className="plant-capture__shutter"
                 aria-label="Capture photo"
-                onClick={capturePhoto}
+                onClick={() => void onShutter()}
+                disabled={isAnalyzing}
               >
                 <span className="plant-capture__shutter-ring" aria-hidden />
                 <span className="plant-capture__shutter-inner" aria-hidden />
@@ -228,6 +442,83 @@ function PlantCapture() {
                   Try again
                 </button>
               </div>
+            </div>
+          ) : null}
+
+          {isAnalyzing ? (
+            <div className="plant-capture__analyzing" aria-live="polite">
+              Analyzing image…
+            </div>
+          ) : null}
+
+          {popup ? (
+            <div className="plant-capture__popup-overlay" role="dialog" aria-modal="true">
+              {popup.type === "plant" ? (
+                <div className="plant-capture__popup-sheet">
+                  <div className="plant-capture__popup-title">
+                    <span className="plant-capture__popup-title--bold">
+                      {popup.suggestionTitle}
+                    </span>{" "}
+                    detected!
+                  </div>
+                  <div className="plant-capture__popup-subtitle">
+                    Is that correct?
+                  </div>
+                  <div className="plant-capture__popup-tryagain-area">
+                    <button
+                      type="button"
+                      className="plant-capture__popup-tryagain"
+                      onClick={() => setPopup(null)}
+                    >
+                      <img className="plant-capture__popup-tryagain-icon" src={imgIcon} alt="" />
+                      <span className="plant-capture__popup-tryagain-text">Try again</span>
+                    </button>
+                  </div>
+                  <div className="plant-capture__popup-unsure">Unsure?</div>
+
+                  <button
+                    type="button"
+                    className="plant-capture__popup-continue"
+                    onClick={() => {
+                      setPopup(null);
+                      navigate("/chat", {
+                        state: { detectedPlantTitle: popup.suggestionTitle },
+                      });
+                    }}
+                  >
+                    <span className="plant-capture__popup-continue-text">Yes, continue</span>
+                    <img className="plant-capture__popup-continue-icon" src={imgCheck} alt="" />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="plant-capture__popup-ask"
+                    onClick={() => {
+                      setPopup(null);
+                      navigate("/chat", {
+                        state: { detectedPlantTitle: popup.suggestionTitle },
+                      });
+                    }}
+                  >
+                    <img className="plant-capture__popup-ask-icon" src={imgVector} alt="" />
+                    <span className="plant-capture__popup-ask-text">Ask Leafy</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="plant-capture__popup-sheet plant-capture__popup-sheet--not-plant">
+                  <div className="plant-capture__popup-title plant-capture__popup-title--not-plant">
+                    this is not a plant, try again
+                  </div>
+                  <button
+                    type="button"
+                    className="plant-capture__popup-tryagain plant-capture__popup-tryagain--not-plant"
+                    onClick={() => setPopup(null)}
+                  >
+                    <img className="plant-capture__popup-tryagain-icon" src={imgIcon} alt="" />
+                    <span className="plant-capture__popup-tryagain-text">Try again</span>
+                  </button>
+                </div>
+              )}
             </div>
           ) : null}
         </div>
