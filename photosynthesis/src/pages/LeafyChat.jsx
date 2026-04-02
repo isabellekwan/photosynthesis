@@ -4,6 +4,7 @@ import "./LeafyHome.css";
 import "./LeafyChat.css";
 import background from "../assets/chat/bg.png";
 import leafy from "../assets/chat/leafy.svg";
+import plus from "../assets/chat/plus.svg";
 
 /**
  * SECURITY NOTE: In a real app, move these to a .env file!
