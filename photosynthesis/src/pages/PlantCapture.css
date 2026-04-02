@@ -135,8 +135,6 @@
   border-bottom-width: 3px;
   border-left-width: 3px;
   border-radius: 0 0 0 10px;
-  box-shadow: 0 0 14px 2px rgba(255, 120, 60, 0.55),
-    0 0 28px 4px rgba(230, 60, 40, 0.35);
 }
 
 .plant-capture__corner--br {
@@ -145,8 +143,6 @@
   border-bottom-width: 3px;
   border-right-width: 3px;
   border-radius: 0 0 10px 0;
-  box-shadow: 0 0 14px 2px rgba(255, 120, 60, 0.55),
-    0 0 28px 4px rgba(230, 60, 40, 0.35);
 }
 
 /* Frosted bands above / below scan line */
@@ -394,156 +390,157 @@
   cursor: not-allowed;
 }
 
+/* === POPUP OVERLAY === */
 .plant-capture__popup-overlay {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+
   z-index: 7;
-  pointer-events: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
+/* === SHEET === */
 .plant-capture__popup-sheet {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 394px;
+  max-width: 100%;
+  box-sizing: border-box; /* 👈 IMPORTANT */
+
+  padding: 28px 20px 32px;
   background: #fff;
+
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
+/* === TEXT === */
 .plant-capture__popup-title {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 78px;
   text-align: center;
   font-family: "Karla", system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 32px;
-  line-height: 1.1;
+  font-size: 30px;
+  line-height: 1.15;
   color: #172a18;
-  letter-spacing: -0.64px;
 }
 
 .plant-capture__popup-title--bold {
   font-weight: 800;
 }
 
+.plant-capture__popup-title--not-plant {
+  font-size: 24px;
+  font-weight: 700;
+}
+
 .plant-capture__popup-subtitle {
-  position: absolute;
-  top: 152px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-family: "Karla", system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 1.1;
+  text-align: left;
+  font-size: 20px;
   color: #000;
 }
 
-.plant-capture__popup-unsure {
-  position: absolute;
-  top: 324px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-family: "Karla", system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 1.1;
-  color: #000;
+/* === BUTTON ROW === */
+.plant-capture__popup-buttons {
+  display: flex;
+  gap: 16px;
 }
 
-.plant-capture__popup-tryagain-area {
-  position: absolute;
-  left: 47px;
-  top: 171px;
-}
-
-.plant-capture__popup-tryagain {
-  width: 129px;
-  height: 63px;
-  border-radius: 50px;
+/* === BUTTON BASE === */
+.plant-capture__popup-tryagain,
+.plant-capture__popup-continue {
+  flex: 1;
+  height: 64px;
+  border-radius: 999px;
   border: none;
-  background: #9696cf;
+  padding: 0 18px;
+
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: space-between;
+
   cursor: pointer;
 }
 
-.plant-capture__popup-tryagain-icon {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
-.plant-capture__popup-tryagain-text {
-  font-family: "Karla", system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  color: #fff;
+/* KEEP YOUR ORIGINAL COLORS */
+.plant-capture__popup-tryagain {
+  background: #9696cf;
 }
 
 .plant-capture__popup-continue {
-  position: absolute;
-  left: 221px;
-  top: 169px;
-  width: 131px;
-  height: 63px;
-  border-radius: 50px;
-  border: none;
   background: #f59522;
-  cursor: pointer;
 }
 
+/* TEXT */
+.plant-capture__popup-tryagain-text,
 .plant-capture__popup-continue-text {
-  position: absolute;
-  left: 20px;
-  top: 20px;
   font-family: "Karla", system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
+  font-size: 17px;
+  color: #fff;
+  white-space: nowrap; /* 👈 prevents breaking */
+}
+
+/* ICONS */
+.plant-capture__popup-tryagain-icon,
+.plant-capture__popup-continue-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* === BOTTOM ROW === */
+.plant-capture__popup-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.plant-capture__popup-unsure {
+  font-size: 20px;
+  color: #000;
+}
+
+/* === ASK LEAFY BUTTON === */
+.plant-capture__popup-ask {
+  flex: 1;
+  height: 70px;
+  border-radius: 999px;
+  border: none;
+  background: #3e7324;
+
+  display: flex;              /* 👈 REQUIRED */
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 22px;
+  cursor: pointer;
+
+  position: relative;         /* 👈 safety */
+}
+
+.plant-capture__popup-ask-text {
+  position: static !important;   /* 👈 overrides old absolute */
+  margin: 0;
+
+  font-family: "Karla", system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
   color: #fff;
 }
 
-.plant-capture__popup-continue-icon {
-  position: absolute;
-  right: 14px;
-  top: 18px;
-  width: 44px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.plant-capture__popup-ask {
-  position: absolute;
-  left: 208px;
-  top: 271px;
-  width: 178px;
-  height: 88px;
-  border: none;
-  border-radius: 44px;
-  background: #3e7324;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
 .plant-capture__popup-ask-icon {
-  position: absolute;
-  left: 50%;
-  top: 38px;
-  width: 72px;
-  height: auto;
-  transform: translateX(-90%) rotate(-19.89deg);
+  position: static !important;  /* 👈 important */
+  width: 36px;
+  height: 36px;
   object-fit: contain;
-  opacity: 0.95;
+  transform: none;
 }
 
 .plant-capture__popup-ask-text {

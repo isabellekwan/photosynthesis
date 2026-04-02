@@ -460,61 +460,89 @@ Rules:
                     </span>{" "}
                     detected!
                   </div>
+
                   <div className="plant-capture__popup-subtitle">
                     Is that correct?
                   </div>
-                  <div className="plant-capture__popup-tryagain-area">
+
+                  <div className="plant-capture__popup-buttons">
                     <button
                       type="button"
                       className="plant-capture__popup-tryagain"
                       onClick={() => setPopup(null)}
                     >
-                      <img className="plant-capture__popup-tryagain-icon" src={minus} alt="" />
-                      <span className="plant-capture__popup-tryagain-text">Try again</span>
+                      <span className="plant-capture__popup-tryagain-text">
+                        Try again
+                      </span>
+                      <img
+                        className="plant-capture__popup-tryagain-icon"
+                        src={minus}
+                        alt=""
+                      />
+                    </button>
+
+                    <button
+                      type="button"
+                      className="plant-capture__popup-continue"
+                      onClick={() => {
+                        setPopup(null);
+                        navigate("/chat", {
+                          state: { detectedPlantTitle: popup.suggestionTitle },
+                        });
+                      }}
+                    >
+                      <span className="plant-capture__popup-continue-text">
+                        Yes, continue
+                      </span>
+                      <img
+                        className="plant-capture__popup-continue-icon"
+                        src={check}
+                        alt=""
+                      />
                     </button>
                   </div>
-                  <div className="plant-capture__popup-unsure">Unsure?</div>
 
-                  <button
-                    type="button"
-                    className="plant-capture__popup-continue"
-                    onClick={() => {
-                      setPopup(null);
-                      navigate("/chat", {
-                        state: { detectedPlantTitle: popup.suggestionTitle },
-                      });
-                    }}
-                  >
-                    <span className="plant-capture__popup-continue-text">Yes, continue</span>
-                    <img className="plant-capture__popup-continue-icon" src={check} alt="" />
-                  </button>
+                  <div className="plant-capture__popup-bottom-row">
+                    <div className="plant-capture__popup-unsure">Unsure?</div>
 
-                  <button
-                    type="button"
-                    className="plant-capture__popup-ask"
-                    onClick={() => {
-                      setPopup(null);
-                      navigate("/chat", {
-                        state: { detectedPlantTitle: popup.suggestionTitle },
-                      });
-                    }}
-                  >
-                    <img className="plant-capture__popup-ask-icon" src={leaf} alt="" />
-                    <span className="plant-capture__popup-ask-text">Ask Leafy</span>
-                  </button>
+                    <button
+                      type="button"
+                      className="plant-capture__popup-ask"
+                      onClick={() => {
+                        setPopup(null);
+                        navigate("/chat", {
+                          state: { detectedPlantTitle: popup.suggestionTitle },
+                        });
+                      }}
+                    >
+                      <span className="plant-capture__popup-ask-text">Ask Leafy</span>
+                      <img
+                        className="plant-capture__popup-ask-icon"
+                        src={leaf}
+                        alt=""
+                      />
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="plant-capture__popup-sheet plant-capture__popup-sheet--not-plant">
+                <div className="plant-capture__popup-sheet">
                   <div className="plant-capture__popup-title plant-capture__popup-title--not-plant">
                     this is not a plant, try again
                   </div>
+
                   <button
                     type="button"
-                    className="plant-capture__popup-tryagain plant-capture__popup-tryagain--not-plant"
+                    className="plant-capture__popup-tryagain"
                     onClick={() => setPopup(null)}
                   >
-                    <img className="plant-capture__popup-tryagain-icon" src={minus} alt="" />
-                    <span className="plant-capture__popup-tryagain-text">Try again</span>
+                    <span className="plant-capture__popup-tryagain-text">
+                      Try again
+                    </span>
+                    <img
+                      className="plant-capture__popup-tryagain-icon"
+                      src={minus}
+                      alt=""
+                    />
                   </button>
                 </div>
               )}
