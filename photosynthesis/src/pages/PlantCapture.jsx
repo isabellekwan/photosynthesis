@@ -540,7 +540,7 @@ Rules:
 
                   <button
                     type="button"
-                    className="plant-capture__popup-tryagain"
+                    className="plant-capture__popup-tryagain plant-capture__popup-tryagain--not-plant"
                     onClick={() => setPopup(null)}
                   >
                     <span className="plant-capture__popup-tryagain-text">
