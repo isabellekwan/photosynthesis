@@ -211,13 +211,13 @@ function LeafyChat() {
           )}
 
           <form className="leafy-chatv2__composer" onSubmit={onSubmit}>
-            <button
-              type="submit"
-              className="leafy-chatv2__plus"
-              disabled={!canSend}
-            >
-              +
-            </button>
+          <button
+            type="submit"
+            className="leafy-chatv2__plus"
+            disabled={!canSend}
+          >
+            <img src={plus} alt="Send" className="leafy-chatv2__plus-icon" />
+          </button>
 
             <input
               className="leafy-chatv2__input"
