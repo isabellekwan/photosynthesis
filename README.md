@@ -10,3 +10,9 @@ when first cloning:
 then run:
 
 `npm run dev`
+
+
+## api key
+make .env in photosynthesis folder and put in:
+
+`VITE_GEMINI_KEY=YOURKEYHERE`
