@@ -1,4 +1,5 @@
 import "./LeafyHome.css";
+import { Link } from "react-router-dom";
 import background from "../assets/leafyhome/aihomebg.png";
 import leafyWave from "../assets/leafyhome/leafywave.svg";
 import speechBubble from "../assets/leafyhome/speechbubble.svg";
@@ -130,9 +131,13 @@ const LeafyHome = () => {
                     <p className="leafy-v2__tile-desc">
                       Scan your plant to identify problems and get care advice
                     </p>
-                    <span className="leafy-v2__chevron" aria-hidden>
+                    <Link
+                      to="/capture"
+                      className="leafy-v2__chevron"
+                      aria-label="Open Plant Capture"
+                    >
                       ›
-                    </span>
+                    </Link>
                   </article>
 
                   <article className="leafy-v2__tile">
